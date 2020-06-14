@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-
-
 public class StaticBuilder : MonoBehaviour
 {
     public void LoadLevel(int lvl)

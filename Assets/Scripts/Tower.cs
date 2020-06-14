@@ -1,10 +1,26 @@
 ﻿using UnityEngine;
 public class Tower : MonoBehaviour
 {
+    [Header("Tower")]
     public float xSpace, ySpace;
     public Transform startPointTower;
     public Transform startPointBrick;
+    private int _numberOfBricksPlaced;
+
+    public int NumberOfBricksPlaced
+    {
+        get => _numberOfBricksPlaced;
+        private set => _numberOfBricksPlaced = value;
+    }
+
     private int _numberItem;
+    public static Tower Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+        _numberOfBricksPlaced = 0;
+    }
 
     private void Start()
     {
@@ -20,8 +36,8 @@ public class Tower : MonoBehaviour
         prefab.transform.position = position;
         prefab.transform.rotation = Quaternion.identity;
         _numberItem++;
-        GlobalData.NumberOfBricksPlaced++;
-        GlobalData.Stamina += 50.0f / GlobalData.NumberOfBricksToWin;
+        _numberOfBricksPlaced++;
+        FindObjectOfType<Player>().stamina += 50.0f / GlobalData.NumberOfBricksToWin;
     } 
     private void OnTriggerEnter2D(Collider2D other)
     {

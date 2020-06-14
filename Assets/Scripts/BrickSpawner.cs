@@ -1,27 +1,43 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using Random = UnityEngine.Random;
+
 public class BrickSpawner : MonoBehaviour
 {
     public GameObject brick;
-    public GameObject brickGroup;
-    public int brickLimit;
     private RectTransform _rectTransform;
-    private float _timer = 0.0f;
+    public GameObject characterFollowingPrefab;
+    private Transform _characterFollowing;
+    private float _timer;
     public float timerTime = 30.0f;
-    // TODO: Implement Static Int to know how many instances of this class
+    private Vector2 _randomVector3;
     private void Start()
     {
         _rectTransform = GetComponent<RectTransform>();
+        _characterFollowing = Instantiate(characterFollowingPrefab, transform.position, Quaternion.identity).transform;
+        _randomVector3 = RandomVector2();
     }
-
-    
-    private void Update()
+    private Vector2 RandomVector2()
     {
         var position = _rectTransform.position;
-        var randomVector3 = new Vector2(Random.Range(position.x,position.x + _rectTransform.rect.width),position.y);
+        return new Vector2(Random.Range((int)position.x,(int)position.x + _rectTransform.rect.width),(int)position.y);
+    }
+    
+    private void FixedUpdate()
+    {
+        var lerpPos = Vector2.Lerp(_characterFollowing.position, _randomVector3, Time.fixedDeltaTime);
+        _characterFollowing.position = lerpPos;
         _timer += Time.fixedDeltaTime;
-        if (!(_timer >= timerTime) || brickGroup.transform.childCount >= GlobalData.NumberOfBricksToWin || GlobalData.NumberOfBricksOnFloor >= 0.25f * GlobalData.NumberOfBricksToWin) return;
-        Instantiate(brick, randomVector3, Quaternion.identity, brickGroup.transform);
+        if (!(Math.Abs(_characterFollowing.position.x - _randomVector3.x) < 1.0f)) return;
+        if (!(_timer >= timerTime) || GlobalData.NumberOfBricksOnFloor >= GlobalData.NumberOfBricksToWin || GlobalData.NumberOfBricksOnFloor >= 0.25f * GlobalData.NumberOfBricksToWin ) return;
+        Instantiate(brick, _randomVector3, Quaternion.identity, transform);
         GlobalData.NumberOfBricksOnFloor++;
         _timer = 0.0f;
+        _randomVector3 = RandomVector2();
+    }
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawIcon(transform.position, "brickspawner.png", false);
     }
 }

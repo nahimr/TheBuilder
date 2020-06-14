@@ -1,28 +1,57 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 public class Player : MonoBehaviour
 {
+    [Header("Player Settings")]
+    public LayerMask solidLayer;
+    public LayerMask brickLayer;
+    public Camera mainCamera;
+    public Vector3 cameraOffset;
+    public Transform grabTransform;
+    public float health;
+    public float stamina;
+    public bool canThrow;
+    public bool canThrowOnTop;
+    public GameObject mount;
+    public GameObject weapon;
+    [Header("Controls Settings")]
+    public JoystickButton jumpButton;
+    public JoystickButton takeButton;
+    public JoystickButton fireButton;
+    public FixedJoystick moveStick;
+
+    private Collider2D _collider;
     private Rigidbody2D _rigidbody;
     private SpriteRenderer _spriteRenderer;
     private float _horizontal;
     private float _vertical;
     private bool _isGrounded;
-    public LayerMask solidLayer;
-    public LayerMask brickLayer;
-    public Camera mainCamera;
+    private float _brickVelocityOnThrow = 1200.0f;
     private bool _objectTook;
     private RaycastHit2D _objectTaken;
-    public JoystickButton jumpButton;
-    public JoystickButton takeButton;
-    public FixedJoystick moveStick;
-    public Vector3 cameraOffset;
-    
+    private bool _haveWeapon;
+    private bool _haveMount;
     
     private void Awake()
     {
         _objectTook = false;
         jumpButton.take = false;
         takeButton.take = true;
+        _collider = GetComponent<Collider2D>();
+        health = 100.0f;
+        stamina = 0.0f;
+        _haveMount = mount;
+        _haveWeapon = weapon;
+        
+        var transform1 = transform;
+        if (_haveWeapon)
+        {
+           weapon = Instantiate(weapon, transform1.position, Quaternion.identity, transform1);
+        }
+
+        if (_haveMount)
+        {
+            Instantiate(mount, transform1.position, Quaternion.identity, transform1);
+        }
     }
 
     private void Start()
@@ -32,10 +61,14 @@ public class Player : MonoBehaviour
         GameEvents.Current.OnTake += Take;
     }
 
+    private void Fire()
+    {
+        if (!_haveWeapon || !fireButton.pressed && !Input.GetButton("Fire")) return;
+        GameEvents.Current.Fire();
+    }
     private void MoveEvent()
     {
         _horizontal = !GlobalData.IsSmartphone ? Input.GetAxisRaw("Horizontal") : moveStick.Horizontal;
-
         if (!_objectTook)
         {
             if(Mathf.Abs(_rigidbody.velocity.x) > 20.0f) return;
@@ -44,25 +77,26 @@ public class Player : MonoBehaviour
         }
         else
         {
-            if(Mathf.Abs(_rigidbody.velocity.x) > (100.0f + GlobalData.Stamina) / 10.0f) return;
+            if(Mathf.Abs(_rigidbody.velocity.x) > (100.0f + stamina) / 10.0f) return;
             if (Mathf.Abs(_horizontal) > 0.1f)
                 Move(new Vector2(_horizontal / 4.0f, 0.0f));
-
-            /*
-            if(Mathf.Abs(_rigidbody.velocity.x) > 10.0f) return;
-            if(Mathf.Abs(_horizontal) > 0.1f)
-                Move(new Vector2(_horizontal / 4.0f,0.0f));*/
         }
     }
     private void Move(Vector2 value)
     {
         if (value.x < 0.0f)
         {
-            _spriteRenderer.flipX = true;
+            var transform1 = transform;
+            var localScale = transform1.localScale;
+            localScale = new Vector3(-1.0f, localScale.y, localScale.z);
+            transform1.localScale = localScale;
         }
         else if (value.x > 0.0f)
         {
-            _spriteRenderer.flipX = false;
+            var transform1 = transform;
+            var localScale = transform1.localScale;
+            localScale = new Vector3(1.0f, localScale.y, localScale.z);
+            transform1.localScale = localScale;
         }
         _rigidbody.AddForce(value , ForceMode2D.Impulse);
     }
@@ -74,37 +108,28 @@ public class Player : MonoBehaviour
 
     }
 
-    private void TakeUpdate()
+    private void TakeFixedUpdate()
     {
-        if (_objectTook)
-        {
-            _objectTaken.transform.position = _rigidbody.position;
-            _objectTaken.transform.rotation = Quaternion.identity;
-        }
-       
-        if (!Input.GetButtonDown("Take") || GlobalData.IsSmartphone) return;
+        if (!_objectTook) return;
+        _objectTaken.transform.position = grabTransform.position;
+        _objectTaken.transform.rotation = Quaternion.identity;
+    }
+
+    private static void TakeUpdate()
+    {
+        if (!Input.GetButtonDown("Take") || GlobalData.IsSmartphone || Time.timeScale <= 0.0f) return;
         GameEvents.Current.Take();
     }
-    
-    
     private void Take()
     {
-        Vector3 direction;
-        if (_spriteRenderer.flipX)
-        {
-            direction = -transform.right;
-        }
-        else
-        {
-            direction = transform.right;
-        }
+        var direction = transform.localScale.x * Vector2.right;
         if (!_objectTook)
         {
-            const float dist = 1.0f;
-            const float radius = 2.50f;
-            var hit = Physics2D.CircleCast(transform.position, radius, direction, dist, brickLayer);
+            const float dist = 1f;
+            const float radius = 2f;
+            var hit = Physics2D.CircleCast(grabTransform.position, radius, direction, dist, brickLayer);
             if (!hit.collider) return;
-            if (!hit.rigidbody.CompareTag("Brick") || hit.rigidbody.bodyType != RigidbodyType2D.Dynamic ) return;
+            if (!hit.rigidbody.CompareTag("Brick") || hit.rigidbody.bodyType != RigidbodyType2D.Dynamic) return;
             if (!ObjectIsGrounded(hit.transform)) return;
             _objectTaken = hit;
             _objectTook = true;
@@ -112,24 +137,35 @@ public class Player : MonoBehaviour
             _objectTaken.rigidbody.bodyType = RigidbodyType2D.Static;
             _objectTaken.rigidbody.gravityScale = 0.0f;
         }
-        else if(_objectTook && Mathf.Abs(moveStick.Horizontal) > 0.0f || Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0.0f )
+        else if(_objectTook)
         {
-            var tempHorizontal = !GlobalData.IsSmartphone ? Input.GetAxisRaw("Horizontal") : moveStick.Horizontal;
             _objectTaken.rigidbody.bodyType = RigidbodyType2D.Dynamic;
             _objectTaken.collider.enabled = true;
             _objectTaken.rigidbody.gravityScale = 1.0f;
-            _objectTaken.rigidbody.AddForce(Vector2.right * (1200.0f * tempHorizontal),ForceMode2D.Impulse);
+            if (canThrow)
+            {
+                if (canThrowOnTop && moveStick.Vertical > 0.0f || Input.GetAxisRaw("Vertical") > 0.0f)
+                {
+                    _objectTaken.rigidbody.AddForce(Vector3.up * _brickVelocityOnThrow / 2.0f, ForceMode2D.Impulse);
+                }
+                else
+                {
+                    _objectTaken.rigidbody.AddForce(direction * _brickVelocityOnThrow, ForceMode2D.Impulse);
+                }
+            }
+            else
+            {
+                _objectTaken.rigidbody.AddForce(direction * 1.0f, ForceMode2D.Impulse);
+            }
             _objectTook = false;
-            
         }
     }
     
     
     private bool IsGrounded() {
-        Vector2 position = transform.position;
         var direction = Vector2.down;
-        const float distance = 1.40f;
-        var hit = Physics2D.Raycast(position, direction, distance, solidLayer | brickLayer);
+        const float distance = 0.75f;
+        var hit = Physics2D.CircleCast(_collider.bounds.center,0.50f, direction, distance, solidLayer | brickLayer);
         return hit.collider != null;
     }
 
@@ -137,7 +173,7 @@ public class Player : MonoBehaviour
     {
         var pos = obj.position;
         var dir = Vector2.down;
-        const float distance = 0.50f;
+        const float distance = 1.10f;
         var hit = Physics2D.Raycast(pos, dir, distance, solidLayer);
         return hit.collider != null;
     }
@@ -150,25 +186,17 @@ public class Player : MonoBehaviour
         position += Vector3.up * 2.0f;
         position += cameraOffset;
         transform1.position = position;
-        var transform2 = transform;
-        if (_spriteRenderer.flipX)
-        {
-            
-            Debug.DrawRay(transform2.position, -transform2.right, Color.magenta);
-        }
-        else
-        {
-            Debug.DrawRay(transform2.position, transform2.right, Color.magenta);
-        }
         TakeUpdate();
+        if (!_haveWeapon) return;
+        Fire();
     }
-
     private void FixedUpdate()
     {
         MoveEvent();
         Jump();
-        if (GlobalData.Stamina >= 50.0f)
-            GlobalData.Stamina -= 0.01f;
+        TakeFixedUpdate();
+        if (stamina >= 50.0f)
+            stamina -= 0.01f;
     }
 
     private void OnCollisionEnter2D(Collision2D other)
@@ -176,28 +204,24 @@ public class Player : MonoBehaviour
         var direction = transform.position - other.gameObject.transform.position;
         if (other.gameObject.CompareTag("Enemy") && _rigidbody.velocity.magnitude < 6.0f)
         {
-            
             _rigidbody.AddForce(direction * other.gameObject.GetComponent<Enemy>().pullbackMagnitude, ForceMode2D.Impulse);
-
-            if (GlobalData.Health > 0.0f) GlobalData.Health--;
-            if (GlobalData.Stamina < 100.0f) GlobalData.Stamina += 2.0f;
+            if (health > 0.0f) health--;
         }
         if (!(Mathf.Abs(direction.x) < Mathf.Abs(direction.y)) || !(direction.y < 0) ||
             !other.gameObject.CompareTag($"Brick")) return;
-        if (GlobalData.Health > 0.0f) GlobalData.Health--;
-        if (GlobalData.Stamina < 100.0f) GlobalData.Stamina += 2.0f;
+        if (health > 0.0f) health--;
+        if (stamina < 100.0f) stamina += 2.0f;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+      
         if (other.gameObject.CompareTag("Lader"))
         {
             _rigidbody.gravityScale = 0.0f;
-            
         }
     }
-
-
+    
     private void OnTriggerStay2D(Collider2D other)
     {
         if (!other.gameObject.CompareTag("Lader")) return;

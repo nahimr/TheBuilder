@@ -1,32 +1,44 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
-    public Transform ply;
+    private Player _ply;
     public float moveSpeed = 5f;
     private Rigidbody2D _rigidbody;
     private Vector2 _movement;
     public float health = 3.0f;
+    private float _maxHealth;
     public float infligateDamage = 1.0f;
     public uint pullbackMagnitude = 3;
     private bool _isPullingBack;
+
+    [Header("HUD")] public Slider healthBar;
+    public Canvas canvas;
+    public float offset;
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
+        _maxHealth = health;
+        _ply = FindObjectOfType<Player>();
     }
     
     private void Update()
     {
-        var direction = ply.position - transform.position;
+        var position = transform.position;
+        var direction = _ply.transform.position - position;
         var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         _rigidbody.rotation = angle;
         direction.Normalize();
         _movement = direction;
-        if (health <= 0.0f)
-        {
-            Destroy(gameObject);
-        }
+        var transform1 = canvas.transform;
+        transform1.position = position + Vector3.up * offset;
+        transform1.rotation = Quaternion.identity;
+        healthBar.value = health / _maxHealth;
+        if (!(health <= 0.0f)) return;
+        _ply.stamina--;
+        EnemySpawner.NumberEnemiesOnFloor--;
+        Destroy(gameObject);
     }
 
     private void FixedUpdate()
@@ -45,7 +57,6 @@ public class Enemy : MonoBehaviour
         if (!other.gameObject.CompareTag("Player")) return;
         _isPullingBack = false;
     }
-
 
     private void OnCollisionEnter2D(Collision2D other)
     {
