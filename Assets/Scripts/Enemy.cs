@@ -59,7 +59,12 @@ public class Enemy : MonoBehaviour
     }
 
     private void OnCollisionEnter2D(Collision2D other)
-    {
+    {     
+        if (other.gameObject.CompareTag("Brick") && other.rigidbody.bodyType == RigidbodyType2D.Static)
+        {
+            Physics2D.IgnoreCollision(other.collider, GetComponent<Collider2D>());
+        }
+        
         if (other.gameObject.CompareTag("Player"))
         {
             _isPullingBack = true;
@@ -67,6 +72,7 @@ public class Enemy : MonoBehaviour
             _rigidbody.AddForce(direction * pullbackMagnitude, ForceMode2D.Impulse);
         }
         if (!other.gameObject.CompareTag("Brick")) return;
+        if (other.gameObject.GetComponent<Rigidbody2D>().bodyType != RigidbodyType2D.Dynamic) return;
         health -= infligateDamage;
     }
 }
