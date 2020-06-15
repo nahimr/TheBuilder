@@ -8,6 +8,12 @@ public class EnemySpawner : MonoBehaviour
     public float timerTime = 30.0f;
     public int numberMaxEnemyOnFloor;
     public static int NumberEnemiesOnFloor;
+
+    private void Awake()
+    {
+        NumberEnemiesOnFloor = 0;
+    }
+
     private void Start()
     {
         _rectTransform = GetComponent<RectTransform>();
