@@ -13,6 +13,14 @@ public class GameEvents : MonoBehaviour
     public event Action OnTake;
     public event Action OnFire;
 
+    public event Action OnSpecial;
+
+    public void Special()
+    {
+        OnSpecial?.Invoke();
+    }
+    
+
     public void Fire()
     {
         OnFire?.Invoke();
