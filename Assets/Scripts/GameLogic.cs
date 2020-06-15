@@ -1,11 +1,10 @@
+﻿using UI;
 using UnityEngine;
-using UnityEngine.UI;
 public static class GlobalData
 {
     public static int NumberOfBricksToWin;
     public static bool IsSmartphone;
     public static int NumberOfBricksOnFloor;
-    public static int NumberOfRowsTower = 6;
     public static int SceneLoading;
     
     public static void ScaleAround(Transform target, Transform pivot, Vector3 scale) {
@@ -20,21 +19,8 @@ public static class GlobalData
 
 public class GameLogic : MonoBehaviour
 {
-    public Slider healthBar;
-    public Slider staminaBar;
-    public Text scoreText;
-    public Text timerText;
-    public GameObject joysticks;
-    public Button pauseMenuButton;
-    public Button resumeGameButton;
-    public GameObject pauseMenu;
-    public GameObject gameFinished;
-    public Text gameFinishedScoreText;
-    public Text gameFinishedTimeText;
-    public Button gameFinishedRetryButton;
-    public GameObject gameFinishedWinText;
-    public GameObject weaponHud;
     public int numberOfBricksToWin;
+    public int numberOfRowsTower;
     public bool isSmartphone;
     public float timer;
     private float _tmpTimer;
@@ -60,7 +46,6 @@ public class GameLogic : MonoBehaviour
         _levelWon = false;
     }
     
-
     private void Update()
     {
         UI_InGame.Instance.healthBar.value = _player.health;

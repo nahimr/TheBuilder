@@ -10,6 +10,7 @@ namespace Items
         {
             if (!other.gameObject.CompareTag("Player")) return;
             if(other.gameObject.GetComponent<Player>().weapon.GetComponent<Weapon>().AddClip(clip)) Destroy(gameObject);
+           
         }
     }
 }
