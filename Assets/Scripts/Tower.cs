@@ -5,38 +5,36 @@ public class Tower : MonoBehaviour
     public float xSpace, ySpace;
     public Transform startPointTower;
     public Transform startPointBrick;
-    private int _numberOfBricksPlaced;
-
-    public int NumberOfBricksPlaced
-    {
-        get => _numberOfBricksPlaced;
-        private set => _numberOfBricksPlaced = value;
-    }
-
+    public uint laderVelocity;
+    private int _numberOfRowsTower;
+    
+    public int NumberOfBricksPlaced { get; private set; }
+    
     private int _numberItem;
     public static Tower Instance { get; private set; }
 
     private void Awake()
     {
         Instance = this;
-        _numberOfBricksPlaced = 0;
+        NumberOfBricksPlaced = 0;
     }
 
     private void Start()
     {
-        GlobalData.ScaleAround(transform, startPointTower, new Vector3(GlobalData.NumberOfRowsTower, (GlobalData.NumberOfBricksToWin * 0.5f) / GlobalData.NumberOfRowsTower, 1.0f) );
+        _numberOfRowsTower = GameLogic.Instance.numberOfRowsTower;
+        GlobalData.ScaleAround(transform, startPointTower, new Vector3(_numberOfRowsTower, (GlobalData.NumberOfBricksToWin * 0.5f) / _numberOfRowsTower, 1.0f) );
     }
 
     private void AddGrid(GameObject prefab)
     {
         var position1 = startPointBrick.position;
-        var position = new Vector3(position1.x + (xSpace * (_numberItem % GlobalData.NumberOfRowsTower)),
-            position1.y + (ySpace * (_numberItem / GlobalData.NumberOfRowsTower)));
+        var position = new Vector3(position1.x + (xSpace * (_numberItem % _numberOfRowsTower)),
+            position1.y + (ySpace * (_numberItem / _numberOfRowsTower)));
         prefab.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
         prefab.transform.position = position;
         prefab.transform.rotation = Quaternion.identity;
         _numberItem++;
-        _numberOfBricksPlaced++;
+        NumberOfBricksPlaced++;
         FindObjectOfType<Player>().stamina += 50.0f / GlobalData.NumberOfBricksToWin;
     } 
     private void OnTriggerEnter2D(Collider2D other)
@@ -45,7 +43,4 @@ public class Tower : MonoBehaviour
         AddGrid(other.gameObject);
         GlobalData.NumberOfBricksOnFloor--;
     }
-
-
-
 }
