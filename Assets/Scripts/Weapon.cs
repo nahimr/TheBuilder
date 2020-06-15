@@ -1,5 +1,5 @@
+﻿using UI;
 using UnityEngine;
-using UnityEngine.UI;
 public class Weapon : MonoBehaviour
 {
     public uint id;
@@ -13,16 +13,13 @@ public class Weapon : MonoBehaviour
     public Vector3 scale;
     public float timeBeforeNextShot;
     private float _timer;
-    private Text _weaponText;
     private void Awake()
     {
-        
         _timer = timeBeforeNextShot;
         var transform1 = transform;
         transform1.localScale = scale;
         transform1.position += offset;
         clip = maxClip;
-       
     }
 
     private void Start()
@@ -52,8 +49,8 @@ public class Weapon : MonoBehaviour
         }
         RefreshHud();
         return true;
+
     }
-    
     private void Fire()
     {
         if (clip <= 0) return;
@@ -66,10 +63,8 @@ public class Weapon : MonoBehaviour
         _timer = 0.0f;
         RefreshHud();
     }
-
     private void FixedUpdate()
     {
         _timer += Time.fixedDeltaTime;
     }
-    
 }
