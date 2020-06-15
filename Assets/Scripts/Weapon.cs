@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 public class Weapon : MonoBehaviour
 {
@@ -27,15 +27,14 @@ public class Weapon : MonoBehaviour
 
     private void Start()
     {
-        GameLogic.Instance.weaponHud.SetActive(true);
-        _weaponText = GameLogic.Instance.weaponHud.GetComponent<Text>();
+        UI_InGame.Instance.ammoText.enabled = true;
         GameEvents.Current.OnFire += Fire;
         RefreshHud();
     }
 
     private void RefreshHud()
     {
-        _weaponText.text = $"{clip} / {maxClip} CLIPS";
+        UI_InGame.Instance.ammoText.text = $"{clip} / {maxClip} CLIPS";
     }
 
     public bool AddClip(uint pClip)
