@@ -9,19 +9,13 @@ public class Player : MonoBehaviour
     public Transform grabTransform;
     public float health;
     public float stamina;
+    public uint speed;
     public bool canThrow;
     public bool canThrowOnTop;
     public GameObject mount;
     public GameObject weapon;
-    [Header("Controls Settings")]
-    public JoystickButton jumpButton;
-    public JoystickButton takeButton;
-    public JoystickButton fireButton;
-    public FixedJoystick moveStick;
-
     private Collider2D _collider;
-    private Rigidbody2D _rigidbody;
-    private SpriteRenderer _spriteRenderer;
+    public Rigidbody2D rigidbodyPly;
     private float _horizontal;
     private float _vertical;
     private bool _isGrounded;
@@ -30,12 +24,11 @@ public class Player : MonoBehaviour
     private RaycastHit2D _objectTaken;
     private bool _haveWeapon;
     private bool _haveMount;
-    
+    public static Player Instance { get; set; }
     private void Awake()
     {
+        Instance = this;
         _objectTook = false;
-        jumpButton.take = false;
-        takeButton.take = true;
         _collider = GetComponent<Collider2D>();
         health = 100.0f;
         stamina = 0.0f;
@@ -53,31 +46,30 @@ public class Player : MonoBehaviour
             Instantiate(mount, transform1.position, Quaternion.identity, transform1);
         }
     }
-
     private void Start()
     {
-        _rigidbody = GetComponent<Rigidbody2D>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        SmartphoneJoysticks.Instance.jumpButton.take = false;
+        SmartphoneJoysticks.Instance.takeButton.take = true;
+        rigidbodyPly = GetComponent<Rigidbody2D>();
         GameEvents.Current.OnTake += Take;
     }
-
-    private void Fire()
+    private static void Fire()
     {
-        if (!_haveWeapon || !fireButton.pressed && !Input.GetButton("Fire")) return;
+        if (!SmartphoneJoysticks.Instance.fireButton.pressed && !Input.GetButton("Fire")) return;
         GameEvents.Current.Fire();
     }
     private void MoveEvent()
     {
-        _horizontal = !GlobalData.IsSmartphone ? Input.GetAxisRaw("Horizontal") : moveStick.Horizontal;
+        _horizontal = !GlobalData.IsSmartphone ? Input.GetAxisRaw("Horizontal") : SmartphoneJoysticks.Instance.moveStick.Horizontal;
         if (!_objectTook)
         {
-            if(Mathf.Abs(_rigidbody.velocity.x) > 20.0f) return;
+            if(Mathf.Abs(rigidbodyPly.velocity.x) > 20.0f) return;
             if(Mathf.Abs(_horizontal) > 0.1f)
                 Move(new Vector2(_horizontal / 2.0f,0.0f));
         }
         else
         {
-            if(Mathf.Abs(_rigidbody.velocity.x) > (100.0f + stamina) / 10.0f) return;
+            if(Mathf.Abs(rigidbodyPly.velocity.x) > (100.0f + stamina) / 10.0f) return;
             if (Mathf.Abs(_horizontal) > 0.1f)
                 Move(new Vector2(_horizontal / 4.0f, 0.0f));
         }
@@ -98,12 +90,12 @@ public class Player : MonoBehaviour
             localScale = new Vector3(1.0f, localScale.y, localScale.z);
             transform1.localScale = localScale;
         }
-        _rigidbody.AddForce(value , ForceMode2D.Impulse);
+        rigidbodyPly.AddForce(value * speed, ForceMode2D.Impulse);
     }
     
     private void Jump()
     {
-        if ((!Input.GetButton("Jump") && !jumpButton.pressed) || !IsGrounded()) return;
+        if ((!Input.GetButton("Jump") && !SmartphoneJoysticks.Instance.jumpButton.pressed) || !IsGrounded()) return;
         Move(new Vector2(0.0f, 3.0f));
 
     }
@@ -144,7 +136,7 @@ public class Player : MonoBehaviour
             _objectTaken.rigidbody.gravityScale = 1.0f;
             if (canThrow)
             {
-                if (canThrowOnTop && moveStick.Vertical > 0.0f || Input.GetAxisRaw("Vertical") > 0.0f)
+                if (canThrowOnTop && SmartphoneJoysticks.Instance.moveStick.Vertical > 0.0f || Input.GetAxisRaw("Vertical") > 0.0f)
                 {
                     _objectTaken.rigidbody.AddForce(Vector3.up * _brickVelocityOnThrow / 2.0f, ForceMode2D.Impulse);
                 }
@@ -181,15 +173,30 @@ public class Player : MonoBehaviour
     private void Update()
     {
         var transform1 = mainCamera.transform;
-        Vector3 position =  _rigidbody.position;
+        Vector3 position =  rigidbodyPly.position;
         position += Vector3.forward * -10.0f;
         position += Vector3.up * 2.0f;
         position += cameraOffset;
         transform1.position = position;
         TakeUpdate();
-        if (!_haveWeapon) return;
-        Fire();
+
+        if (_haveWeapon)
+        {
+            Fire();
+        }
+
+        if (_haveMount)
+        {
+            Action();
+        }
     }
+
+    private static void Action()
+    {
+        if (!SmartphoneJoysticks.Instance.specialButton.pressed && !Input.GetButton("SpecialButton")) return;
+        GameEvents.Current.Special();
+    }
+    
     private void FixedUpdate()
     {
         MoveEvent();
@@ -202,9 +209,9 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other)
     {
         var direction = transform.position - other.gameObject.transform.position;
-        if (other.gameObject.CompareTag("Enemy") && _rigidbody.velocity.magnitude < 6.0f)
+        if (other.gameObject.CompareTag("Enemy") && rigidbodyPly.velocity.magnitude < 6.0f)
         {
-            _rigidbody.AddForce(direction * other.gameObject.GetComponent<Enemy>().pullbackMagnitude, ForceMode2D.Impulse);
+            rigidbodyPly.AddForce(direction * other.gameObject.GetComponent<Enemy>().pullbackMagnitude, ForceMode2D.Impulse);
             if (health > 0.0f) health--;
         }
         if (!(Mathf.Abs(direction.x) < Mathf.Abs(direction.y)) || !(direction.y < 0) ||
@@ -215,23 +222,14 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-      
-        if (other.gameObject.CompareTag("Lader"))
-        {
-            _rigidbody.gravityScale = 0.0f;
-        }
-    }
-    
-    private void OnTriggerStay2D(Collider2D other)
-    {
         if (!other.gameObject.CompareTag("Lader")) return;
-        var tempVertical = !GlobalData.IsSmartphone ? Input.GetAxisRaw("Vertical") : moveStick.Vertical;
-        Move(new Vector2(0.0f, tempVertical));
+        rigidbodyPly.gravityScale = 0.0f;
+        Move(new Vector2(0.0f,  Tower.Instance.laderVelocity));
     }
     
     private void OnTriggerExit2D(Collider2D other)
     {
         if (!other.gameObject.CompareTag("Lader")) return;
-        _rigidbody.gravityScale = 2.0f;
+        rigidbodyPly.gravityScale = 2.0f;
     }
 }
