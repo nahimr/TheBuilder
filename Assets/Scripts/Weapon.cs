@@ -39,8 +39,17 @@ public class Weapon : MonoBehaviour
 
     public bool AddClip(uint pClip)
     {
-        if (clip + pClip > maxClip) return false;
-        clip += pClip;
+        if (clip >= maxClip) return false;
+        var sum = clip + pClip;
+
+        if (sum < maxClip)
+        {
+            clip += pClip;
+        }
+        else
+        {
+            clip += maxClip - clip;
+        }
         RefreshHud();
         return true;
     }
