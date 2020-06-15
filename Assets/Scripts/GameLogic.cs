@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 public static class GlobalData
 {
@@ -49,12 +49,12 @@ public class GameLogic : MonoBehaviour
         GlobalData.NumberOfBricksOnFloor = 0;
         _timeScale = 1.0f;
         SetTimeGame(1.0f);
-        pauseMenuButton.onClick.AddListener(() => PauseGame(true));
-        resumeGameButton.onClick.AddListener(() => PauseGame(false));
+        UI_InGame.Instance.pauseButton.onClick.AddListener(() => PauseGame(true));
+        UI_InGame.Instance.resumeButton.onClick.AddListener(() => PauseGame(false));
         GlobalData.NumberOfBricksToWin = numberOfBricksToWin;
         GlobalData.IsSmartphone = isSmartphone;
         _player = FindObjectOfType<Player>();
-        joysticks.SetActive(isSmartphone);
+        UI_InGame.Instance.joysticks.SetActive(isSmartphone);
         _tmpTimer = 0.0f;
         _gameFinished = false;
         _levelWon = false;
@@ -63,9 +63,9 @@ public class GameLogic : MonoBehaviour
 
     private void Update()
     {
-        healthBar.value = _player.health;
-        staminaBar.value = _player.stamina;
-        scoreText.text = $"Score: {Tower.Instance.NumberOfBricksPlaced} / {GlobalData.NumberOfBricksToWin}";
+        UI_InGame.Instance.healthBar.value = _player.health;
+        UI_InGame.Instance.staminaBar.value = _player.stamina;
+        UI_InGame.Instance.scoreText.text = $"Score: {Tower.Instance.NumberOfBricksPlaced} / {GlobalData.NumberOfBricksToWin}";
     }
 
     private void FixedUpdate()
@@ -82,12 +82,12 @@ public class GameLogic : MonoBehaviour
         if (value)
         {
             SetTimeGame(0.0f);
-            pauseMenu.SetActive(true);
+            UI_InGame.Instance.pauseMenu.SetActive(true);
         }
         else
         {
             SetTimeGame(_timeScale);
-            pauseMenu.SetActive(false);
+            UI_InGame.Instance.pauseMenu.SetActive(false);
         }
     }
 
@@ -100,22 +100,26 @@ public class GameLogic : MonoBehaviour
     {
         var minutes = Mathf.Floor(value / 60);
         var seconds = Mathf.RoundToInt(value % 60);
-        timerText.text = $"{minutes}:{seconds}";
+        UI_InGame.Instance.timerText.text = $"{minutes}:{seconds}";
     }
     private void EndGame()
     {
         SetTimeGame(0.0f);
-        gameFinished.SetActive(true);
+        UI_InGame.Instance.gameFinished.SetActive(true);
         _gameFinished = true;
         if (Tower.Instance.NumberOfBricksPlaced == GlobalData.NumberOfBricksToWin)
         {
             _levelWon = true;
-            gameFinishedWinText.SetActive(true);
+            UI_InGame.Instance.resultText.text = "Win !!";
         }
-        gameFinishedScoreText.text = $"Score: {Tower.Instance.NumberOfBricksPlaced} / {GlobalData.NumberOfBricksToWin}";
+        else
+        {
+            UI_InGame.Instance.resultText.text = "Loose !!";
+        }
+        UI_InGame.Instance.finalScoreText.text = $"Score: {Tower.Instance.NumberOfBricksPlaced} / {GlobalData.NumberOfBricksToWin}";
         var minutes = Mathf.Floor(_tmpTimer / 60);
         var seconds = Mathf.RoundToInt(_tmpTimer % 60);
-        gameFinishedTimeText.text = $"Time: {minutes}:{seconds}";
+        UI_InGame.Instance.finalTimeText.text = $"Time: {minutes}:{seconds}";
         _tmpTimer = 0.0f;
     }
 }
