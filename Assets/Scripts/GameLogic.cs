@@ -1,4 +1,5 @@
-﻿using UI;
+﻿using System;
+using UI;
 using UnityEngine;
 public static class GlobalData
 {
@@ -35,16 +36,20 @@ public class GameLogic : MonoBehaviour
         GlobalData.NumberOfBricksOnFloor = 0;
         _timeScale = 1.0f;
         SetTimeGame(1.0f);
-        UI_InGame.Instance.pauseButton.onClick.AddListener(() => PauseGame(true));
-        UI_InGame.Instance.resumeButton.onClick.AddListener(() => PauseGame(false));
         GlobalData.NumberOfBricksToWin = numberOfBricksToWin;
         GlobalData.IsSmartphone = isSmartphone;
-        UI_InGame.Instance.joysticks.SetActive(isSmartphone);
         _tmpTimer = 0.0f;
         _gameFinished = false;
         _levelWon = false;
     }
-    
+
+    private void Start()
+    {
+        UI_InGame.Instance.pauseButton.onClick.AddListener(() => PauseGame(true));
+        UI_InGame.Instance.resumeButton.onClick.AddListener(() => PauseGame(false));
+        UI_InGame.Instance.joysticks.SetActive(isSmartphone);
+    }
+
     private void Update()
     {
         UI_InGame.Instance.healthBar.value = player.health;

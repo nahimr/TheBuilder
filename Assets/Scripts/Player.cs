@@ -25,6 +25,13 @@ public class Player : MonoBehaviour
     private bool _haveWeapon;
     private bool _haveMount;
     public static Player Instance { get; set; }
+
+    public bool HaveWeapon
+    {
+        get => _haveWeapon;
+        set => _haveWeapon = value;
+    }
+
     private void Awake()
     {
         Instance = this;

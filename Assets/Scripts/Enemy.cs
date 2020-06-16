@@ -20,9 +20,13 @@ public class Enemy : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _maxHealth = health;
+       
+    }
+
+    private void Start()
+    {
         _ply = GameLogic.Instance.player;
     }
-    
     private void Update()
     {
         var position = transform.position;

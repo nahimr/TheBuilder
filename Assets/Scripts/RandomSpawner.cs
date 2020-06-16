@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Items;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 [System.Serializable]
@@ -22,7 +23,8 @@ public class RandomSpawner : MonoBehaviour
     public float timerTime = 30.0f;
     public int numberMaxObjOnFloor;
     public static int NumberObjectsOnFloor;
-
+    
+    
     private void Awake()
     {
         NumberObjectsOnFloor = 0;
@@ -47,7 +49,29 @@ public class RandomSpawner : MonoBehaviour
         }
         if (!(_timer >= timerTime) || (NumberObjectsOnFloor >= numberMaxObjOnFloor && numberMaxObjOnFloor > 0)) return;
         var randNumber = Random.Range(0, objects.Length - 1);
-        Instantiate(objects[randNumber].item, randomVector3, Quaternion.identity);
+        
+        var randItem = Instantiate(objects[randNumber].item, randomVector3, Quaternion.identity);
+        switch (objects[randNumber].options)
+        {
+            case ItemsType.ItemsOptions.Heart:
+            {
+                var randItemHeart = randItem.GetComponent<Heart>();
+                randItemHeart.random = true;
+                randItemHeart.minHealth = (ushort)Random.Range(1, 25);
+                randItemHeart.maxHealth = (ushort) Random.Range(randItemHeart.minHealth, 50);
+                break;
+            }
+            case ItemsType.ItemsOptions.Clip when !Player.Instance.HaveWeapon:
+                Destroy(randItem);
+                return;
+            case ItemsType.ItemsOptions.Clip:
+            {
+                var randItemClip = randItem.GetComponent<Clip>();
+                randItemClip.clip = (uint) Random.Range(1, Player.Instance.weapon.GetComponent<Weapon>().maxClip);
+                break;
+            }
+        }
+        
         NumberObjectsOnFloor++;
         _timer = 0.0f;
     }
