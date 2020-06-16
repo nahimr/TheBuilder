@@ -1,13 +1,12 @@
 ﻿using Items;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 [CustomEditor(typeof(Mount), true)]
 public class MountInspector : Editor{
     public override void OnInspectorGUI()
     {
-        serializedObject.Update();
+       
         var myTarget = (Mount) target;
 
         myTarget.id = (ushort) Mathf.Clamp(EditorGUILayout.IntField("ID",myTarget.id), 0, ushort.MaxValue);
@@ -26,11 +25,8 @@ public class MountInspector : Editor{
             
 
         }
-        serializedObject.ApplyModifiedProperties();
-        if (!GUI.changed) return;
-        EditorUtility.SetDirty(myTarget);
-        EditorSceneManager.MarkSceneDirty(myTarget.gameObject.scene);
-        
+        if(GUI.changed)
+            EditorUtility.SetDirty(myTarget);
     }
 } 
 
@@ -38,7 +34,7 @@ public class MountInspector : Editor{
 public class HeartInspector : Editor{
     public override void OnInspectorGUI()
     {
-        serializedObject.Update();
+        
         var myTarget = (Heart) target;
         
         myTarget.random = EditorGUILayout.Toggle("Is Random ?", myTarget.random);
@@ -53,9 +49,7 @@ public class HeartInspector : Editor{
             myTarget.health = (ushort) Mathf.Clamp(EditorGUILayout.IntField("Health",myTarget.health), 0, ushort.MaxValue);
         }
 
-        serializedObject.ApplyModifiedProperties();
-        if (!GUI.changed) return;
-        EditorUtility.SetDirty(myTarget);
-        EditorSceneManager.MarkSceneDirty(myTarget.gameObject.scene);
+        if(GUI.changed)
+            EditorUtility.SetDirty(myTarget);
     }
 } 
