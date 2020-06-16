@@ -1269,7 +1269,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   numberOfBricksToWin: 36
   numberOfRowsTower: 1
-  isSmartphone: 0
+  isSmartphone: 1
   timer: 700
 --- !u!114 &1521933206
 MonoBehaviour:
@@ -1392,8 +1392,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objects:
-  - {fileID: 6462116055356104060, guid: 6bd13221d1abecb4ca4733625039aecb, type: 3}
-  - {fileID: 2495777056666321632, guid: 75b471f5d9033334c91f3c257a46bff3, type: 3}
+  - item: {fileID: 6462116055356104060, guid: 6bd13221d1abecb4ca4733625039aecb, type: 3}
+    options: 0
+  - item: {fileID: 2495777056666321632, guid: 75b471f5d9033334c91f3c257a46bff3, type: 3}
+    options: 1
   timerTime: 30
   numberMaxObjOnFloor: 5
 --- !u!114 &1600735812

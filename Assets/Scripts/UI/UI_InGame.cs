@@ -38,7 +38,6 @@ namespace UI
         [Header("Other")] 
         public GameObject joysticks;
         public static UI_InGame Instance { get; private set; }
-
         
         private void Awake()
         {
