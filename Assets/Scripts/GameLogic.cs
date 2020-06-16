@@ -27,7 +27,7 @@ public class GameLogic : MonoBehaviour
     private bool _gameFinished;
     private bool _levelWon;
     private float _timeScale;
-    private Player _player;
+    public Player player;
     public static GameLogic Instance { get; private set; }
     private void Awake()
     {
@@ -39,7 +39,6 @@ public class GameLogic : MonoBehaviour
         UI_InGame.Instance.resumeButton.onClick.AddListener(() => PauseGame(false));
         GlobalData.NumberOfBricksToWin = numberOfBricksToWin;
         GlobalData.IsSmartphone = isSmartphone;
-        _player = FindObjectOfType<Player>();
         UI_InGame.Instance.joysticks.SetActive(isSmartphone);
         _tmpTimer = 0.0f;
         _gameFinished = false;
@@ -48,8 +47,8 @@ public class GameLogic : MonoBehaviour
     
     private void Update()
     {
-        UI_InGame.Instance.healthBar.value = _player.health;
-        UI_InGame.Instance.staminaBar.value = _player.stamina;
+        UI_InGame.Instance.healthBar.value = player.health;
+        UI_InGame.Instance.staminaBar.value = player.stamina;
         UI_InGame.Instance.scoreText.text = $"Score: {Tower.Instance.NumberOfBricksPlaced} / {GlobalData.NumberOfBricksToWin}";
     }
 
@@ -57,7 +56,7 @@ public class GameLogic : MonoBehaviour
     {
         _tmpTimer += Time.fixedDeltaTime;
         SetTimer(timer - _tmpTimer);
-        if (_tmpTimer >= timer || GlobalData.NumberOfBricksToWin == Tower.Instance.NumberOfBricksPlaced || _player.health <= 0.0f)
+        if (_tmpTimer >= timer || GlobalData.NumberOfBricksToWin == Tower.Instance.NumberOfBricksPlaced || player.health <= 0.0f)
         {
             EndGame();
         }

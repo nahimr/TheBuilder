@@ -35,7 +35,7 @@ public class Tower : MonoBehaviour
         prefab.transform.rotation = Quaternion.identity;
         _numberItem++;
         NumberOfBricksPlaced++;
-        FindObjectOfType<Player>().stamina += 50.0f / GlobalData.NumberOfBricksToWin;
+        GameLogic.Instance.player.stamina += 50.0f / GlobalData.NumberOfBricksToWin;
     } 
     private void OnTriggerEnter2D(Collider2D other)
     {

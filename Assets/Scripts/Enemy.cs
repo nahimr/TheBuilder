@@ -20,7 +20,7 @@ public class Enemy : MonoBehaviour
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _maxHealth = health;
-        _ply = FindObjectOfType<Player>();
+        _ply = GameLogic.Instance.player;
     }
     
     private void Update()
