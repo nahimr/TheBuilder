@@ -46,6 +46,7 @@ public class GameLogic : MonoBehaviour
     {
         UI_InGame.Instance.pauseButton.onClick.AddListener(() => PauseGame(true));
         UI_InGame.Instance.resumeButton.onClick.AddListener(() => PauseGame(false));
+
         UI_InGame.Instance.joysticks.SetActive(isSmartphone);
     }
 

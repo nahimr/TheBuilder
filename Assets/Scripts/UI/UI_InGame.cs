@@ -42,6 +42,9 @@ namespace UI
         private void Awake()
         {
             Instance = this;
+            retryButton.onClick.AddListener(StaticBuilder.ReloadLevel);
+            finalRetryButton.onClick.AddListener(StaticBuilder.ReloadLevel);
+            exitGameButton.onClick.AddListener(()=> StaticBuilder.LoadLevel(1));
         }
     }
 }

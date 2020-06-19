@@ -1,14 +1,13 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-public class StaticBuilder : MonoBehaviour
+﻿using UnityEngine.SceneManagement;
+public static class StaticBuilder
 {
-    public void LoadLevel(int lvl)
+    public static void LoadLevel(int lvl)
     {
         GlobalData.SceneLoading = lvl;
         SceneManager.LoadScene($"LoadingScreen");
     }
 
-    public void ReloadLevel()
+    public static void ReloadLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }

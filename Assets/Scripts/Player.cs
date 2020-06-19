@@ -21,16 +21,14 @@ public class Player : MonoBehaviour
     private bool _isGrounded;
     private float _brickVelocityOnThrow = 1200.0f;
     private bool _objectTook;
+    private float _timerTake;
+    private const float TimeToTake = 1.0f;
+    
     private RaycastHit2D _objectTaken;
-    private bool _haveWeapon;
-    private bool _haveMount;
-    public static Player Instance { get; set; }
+    private bool HaveMount { get; set; }
+    public static Player Instance { get; private set; }
 
-    public bool HaveWeapon
-    {
-        get => _haveWeapon;
-        set => _haveWeapon = value;
-    }
+    public bool HaveWeapon { get; private set; }
 
     private void Awake()
     {
@@ -39,26 +37,26 @@ public class Player : MonoBehaviour
         _collider = GetComponent<Collider2D>();
         health = 100.0f;
         stamina = 0.0f;
-        _haveMount = mount;
-        _haveWeapon = weapon;
-        
+        HaveMount = mount;
+        HaveWeapon = weapon;
+        _timerTake = TimeToTake;
         var transform1 = transform;
-        if (_haveWeapon)
+        if (HaveWeapon)
         {
            weapon = Instantiate(weapon, transform1.position, Quaternion.identity, transform1);
         }
 
-        if (_haveMount)
+        if (HaveMount)
         {
             Instantiate(mount, transform1.position, Quaternion.identity, transform1);
         }
     }
     private void Start()
     {
-        SmartphoneJoysticks.Instance.jumpButton.take = false;
+        /*SmartphoneJoysticks.Instance.jumpButton.take = false;
         SmartphoneJoysticks.Instance.fireButton.take = false;
         SmartphoneJoysticks.Instance.specialButton.take = false;
-        SmartphoneJoysticks.Instance.takeButton.take = true;
+        SmartphoneJoysticks.Instance.takeButton.take = true;*/
         rigidbodyPly = GetComponent<Rigidbody2D>();
         GameEvents.Current.OnTake += Take;
     }
@@ -105,10 +103,10 @@ public class Player : MonoBehaviour
     private void Jump()
     {
         if ((!Input.GetButton("Jump") && !SmartphoneJoysticks.Instance.jumpButton.pressed) || !IsGrounded()) return;
+        Debug.Log("I'm jumping");
         Move(new Vector2(0.0f, 3.0f));
 
     }
-
     private void TakeFixedUpdate()
     {
         if (!_objectTook) return;
@@ -116,9 +114,12 @@ public class Player : MonoBehaviour
         _objectTaken.transform.rotation = Quaternion.identity;
     }
 
-    private static void TakeUpdate()
+    private void TakeUpdate()
     {
-        if (!Input.GetButtonDown("Take") || GlobalData.IsSmartphone || Time.timeScale <= 0.0f) return;
+        _timerTake += Time.fixedDeltaTime;
+        if (!SmartphoneJoysticks.Instance.takeButton.pressed || !(_timerTake >= TimeToTake)) return;
+        Debug.Log("I'm taking");
+        _timerTake = 0.0f;
         GameEvents.Current.Take();
     }
     private void Take()
@@ -187,14 +188,11 @@ public class Player : MonoBehaviour
         position += Vector3.up * 2.0f;
         position += cameraOffset;
         transform1.position = position;
-        TakeUpdate();
-
-        if (_haveWeapon)
+        if (HaveWeapon)
         {
             Fire();
         }
-
-        if (_haveMount)
+        if (HaveMount)
         {
             Action();
         }
@@ -203,6 +201,7 @@ public class Player : MonoBehaviour
     private static void Action()
     {
         if (!SmartphoneJoysticks.Instance.specialButton.pressed && !Input.GetButton("SpecialButton")) return;
+        Debug.Log("I'm on Action");
         GameEvents.Current.Special();
     }
     
@@ -210,6 +209,7 @@ public class Player : MonoBehaviour
     {
         MoveEvent();
         Jump();
+        TakeUpdate();
         TakeFixedUpdate();
         if (stamina >= 50.0f)
             stamina -= 0.01f;
