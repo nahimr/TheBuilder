@@ -56,6 +56,8 @@ public class Player : MonoBehaviour
     private void Start()
     {
         SmartphoneJoysticks.Instance.jumpButton.take = false;
+        SmartphoneJoysticks.Instance.fireButton.take = false;
+        SmartphoneJoysticks.Instance.specialButton.take = false;
         SmartphoneJoysticks.Instance.takeButton.take = true;
         rigidbodyPly = GetComponent<Rigidbody2D>();
         GameEvents.Current.OnTake += Take;
