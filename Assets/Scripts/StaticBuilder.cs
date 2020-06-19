@@ -1,5 +1,6 @@
-﻿using UnityEngine.SceneManagement;
-public static class StaticBuilder
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+public class StaticBuilder : MonoBehaviour
 {
     public static void LoadLevel(int lvl)
     {
@@ -10,5 +11,10 @@ public static class StaticBuilder
     public static void ReloadLevel()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void NoStaticLoadLevel(int lvl)
+    {
+        LoadLevel(lvl);
     }
 }
