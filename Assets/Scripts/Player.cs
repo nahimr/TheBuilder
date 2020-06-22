@@ -53,16 +53,12 @@ public class Player : MonoBehaviour
     }
     private void Start()
     {
-        /*SmartphoneJoysticks.Instance.jumpButton.take = false;
-        SmartphoneJoysticks.Instance.fireButton.take = false;
-        SmartphoneJoysticks.Instance.specialButton.take = false;
-        SmartphoneJoysticks.Instance.takeButton.take = true;*/
         rigidbodyPly = GetComponent<Rigidbody2D>();
         GameEvents.Current.OnTake += Take;
     }
     private static void Fire()
     {
-        if (!SmartphoneJoysticks.Instance.fireButton.pressed && !Input.GetButton("Fire")) return;
+        if (!SmartphoneJoysticks.Instance.fireButton.pressed) return;
         GameEvents.Current.Fire();
     }
     private void MoveEvent()
@@ -102,8 +98,7 @@ public class Player : MonoBehaviour
     
     private void Jump()
     {
-        if ((!Input.GetButton("Jump") && !SmartphoneJoysticks.Instance.jumpButton.pressed) || !IsGrounded()) return;
-        Debug.Log("I'm jumping");
+        if (!SmartphoneJoysticks.Instance.jumpButton.pressed || !IsGrounded()) return;
         Move(new Vector2(0.0f, 3.0f));
 
     }
@@ -118,7 +113,6 @@ public class Player : MonoBehaviour
     {
         _timerTake += Time.fixedDeltaTime;
         if (!SmartphoneJoysticks.Instance.takeButton.pressed || !(_timerTake >= TimeToTake)) return;
-        Debug.Log("I'm taking");
         _timerTake = 0.0f;
         GameEvents.Current.Take();
     }
@@ -200,7 +194,7 @@ public class Player : MonoBehaviour
 
     private static void Action()
     {
-        if (!SmartphoneJoysticks.Instance.specialButton.pressed && !Input.GetButton("SpecialButton")) return;
+        if (!SmartphoneJoysticks.Instance.specialButton.pressed) return;
         Debug.Log("I'm on Action");
         GameEvents.Current.Special();
     }

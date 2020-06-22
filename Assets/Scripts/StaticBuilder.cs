@@ -13,8 +13,9 @@ public class StaticBuilder : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void NoStaticLoadLevel(int lvl)
+    public void NoStatic_LoadLevel(int lvl)
     {
-        LoadLevel(lvl);
+        GlobalData.SceneLoading = lvl;
+        SceneManager.LoadScene($"LoadingScreen");
     }
 }
