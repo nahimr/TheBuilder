@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
     private const float TimeToTake = 1.0f;
     
     private RaycastHit2D _objectTaken;
-    private bool HaveMount { get; set; }
+    public bool HaveMount { get; private set; }
     public static Player Instance { get; private set; }
 
     public bool HaveWeapon { get; private set; }
@@ -182,14 +182,7 @@ public class Player : MonoBehaviour
         position += Vector3.up * 2.0f;
         position += cameraOffset;
         transform1.position = position;
-        if (HaveWeapon)
-        {
-            Fire();
-        }
-        if (HaveMount)
-        {
-            Action();
-        }
+        
     }
 
     private static void Action()
@@ -205,6 +198,14 @@ public class Player : MonoBehaviour
         Jump();
         TakeUpdate();
         TakeFixedUpdate();
+        if (HaveWeapon)
+        {
+            Fire();
+        }
+        if (HaveMount)
+        {
+            Action();
+        }
         if (stamina >= 50.0f)
             stamina -= 0.01f;
     }

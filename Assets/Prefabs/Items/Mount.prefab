@@ -96,7 +96,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0
   velocitySpeed: 0
-  jetpackForce: 10
+  jetpackForce: 30
   jetpackAmount: 5000
   typeOfMount: 0
   optionsOfMount: 1

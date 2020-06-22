@@ -62,7 +62,7 @@ public class Mount : MonoBehaviour
       {
          case Options.Jetpack:
             if (_jetpackAmount == 0) return;
-            Player.Instance.rigidbodyPly.AddForce(Vector2.up * jetpackForce);
+            Player.Instance.rigidbodyPly.AddForce(Vector2.up * jetpackForce, ForceMode2D.Force);
             _jetpackAmount--;
             var division = (float) _jetpackAmount / jetpackAmount;
             UI_InGame.Instance.jetpackBar.value = _jetpackAmount;

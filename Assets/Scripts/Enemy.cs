@@ -22,7 +22,6 @@ public class Enemy : MonoBehaviour
         _maxHealth = health;
        
     }
-
     private void Start()
     {
         _ply = GameLogic.Instance.player;
