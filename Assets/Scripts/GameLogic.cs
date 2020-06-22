@@ -110,5 +110,6 @@ public class GameLogic : MonoBehaviour
         var seconds = Mathf.RoundToInt(_tmpTimer % 60);
         UI_InGame.Instance.finalTimeText.text = $"Time: {minutes}:{seconds}";
         _tmpTimer = 0.0f;
+        GPGSAuthentificator.Platform.ReportScore(Tower.Instance.NumberOfBricksPlaced, GPGSIds.leaderboard_best_players, null);
     }
 }

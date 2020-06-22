@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1240,8 +1240,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -32}
+  m_SizeDelta: {x: 0, y: -32}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &577491424
 MonoBehaviour:
@@ -1381,7 +1381,7 @@ GameObject:
   m_Component:
   - component: {fileID: 738775373}
   m_Layer: 5
-  m_Name: Content
+  m_Name: LeaderBoard_Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1403,7 +1403,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.000034921155}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &918892048
@@ -2754,6 +2754,10 @@ MonoBehaviour:
   shopMenu: {fileID: 1638333637}
   mainMenu: {fileID: 1057358226}
   levelsMenu: {fileID: 1298140838}
+  leaderboard: {fileID: 1276207865}
+  leaderboardContent: {fileID: 738775372}
+  leaderboardObject: {fileID: 382636005074554924, guid: 949b54bc45d78954bb7cd76d0b18dd0e,
+    type: 3}
 --- !u!114 &1675276003
 MonoBehaviour:
   m_ObjectHideFlags: 0
