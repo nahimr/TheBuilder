@@ -5,16 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class GPGSAuthentificator : MonoBehaviour
 {
-    private static PlayGamesPlatform _platform;
+    public static PlayGamesPlatform Platform;
     
     private void Start()
     {
-        if (_platform == null)
+        if (Platform == null)
         {
             var config = new PlayGamesClientConfiguration.Builder().Build();
             PlayGamesPlatform.InitializeInstance(config);
             PlayGamesPlatform.DebugLogEnabled = true;
-            _platform = PlayGamesPlatform.Activate();
+            Platform = PlayGamesPlatform.Activate();
         }
         
         Social.Active.localUser.Authenticate(success =>
