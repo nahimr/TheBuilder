@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using GooglePlayGames.BasicApi;
+using UI;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
@@ -11,7 +14,48 @@ public class MenusLogic : MonoBehaviour
     public GameObject leaderboard;
     public GameObject leaderboardContent;
     public GameObject leaderboardObject;
+    public GameObject levelsContent;
+    public GameObject levelButtonPrefab;
 
+    private void Awake()
+    {
+        var jsonContent = JsonHelper.GetJsonArray<LevelData>(GlobalData.LevelsJson);
+        try
+        {
+            GPGSAuthentificator.Platform.Events.FetchEvent(DataSource.ReadNetworkOnly,
+                GPGSIds.event_levels_finished,
+                (responseStatus, typeEvent) =>
+                {
+                    if (responseStatus != ResponseStatus.Success) return;
+                    UpdateLevelsMenu(typeEvent.CurrentCount, jsonContent);
+                });  
+        }
+        catch (NullReferenceException)
+        {
+            UpdateLevelsMenu((ulong)jsonContent.Length, jsonContent);
+        }
+    }
+
+    private void UpdateLevelsMenu(ulong currentLevelsWon, IReadOnlyCollection<LevelData> jsonContent)
+    {
+        for (var i = 0; i < jsonContent.Count; i++)
+        {
+            var bt = Instantiate(levelButtonPrefab, levelsContent.transform);
+            bt.GetComponentInChildren<Text>().text = i.ToString();
+            var button = bt.GetComponent<Button>();
+            var i1 = i;
+            button.onClick.AddListener(() =>
+            {
+                GlobalData.ActualLevel = i1;
+                StaticBuilder.LoadScene(3);
+            });
+            if ((ulong) i <=  currentLevelsWon)
+            {
+                button.interactable = true;
+            }
+        }
+    }
+    
     private void Start()
     {
         ShowLeaderboard();
@@ -46,25 +90,32 @@ public class MenusLogic : MonoBehaviour
 
     private void ShowLeaderboard()
     {
-        if (!GPGSAuthentificator.Platform.IsAuthenticated())
+
+        try
+        {
+            if (!GPGSAuthentificator.Platform.IsAuthenticated())
+            {
+                leaderboard.SetActive(false);
+                return;
+            }
+
+            leaderboard.SetActive(true);
+            GPGSAuthentificator.Platform.LoadScores(GPGSIds.leaderboard_best_players, callback =>
+            {
+                var scores = callback;
+                var userIds = new string[scores.Length];
+            
+                for (var i = 0; i < scores.Length; i++)
+                {
+                    userIds[i] = scores[i].userID;
+                }
+                Social.LoadUsers(userIds, profiles => DisplayLeaderBoard(scores, profiles));
+            });
+        }
+        catch (NullReferenceException)
         {
             leaderboard.SetActive(false);
-            return;
         }
-
-        leaderboard.SetActive(true);
-        GPGSAuthentificator.Platform.LoadScores(GPGSIds.leaderboard_best_players, callback =>
-        {
-            var scores = callback;
-            var userids = new string[scores.Length];
-            
-            for (var i = 0; i < scores.Length; i++)
-            {
-                userids[i] = scores[i].userID;
-            }
-            
-            Social.LoadUsers(userids, profiles => DisplayLeaderBoard(scores, profiles));
-        });
     }
     private void DisplayLeaderBoard(IReadOnlyList<IScore> scores, IReadOnlyList<IUserProfile> profiles)
     {
