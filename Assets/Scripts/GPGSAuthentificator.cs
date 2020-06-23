@@ -23,5 +23,5 @@ public class GPGSAuthentificator : MonoBehaviour
             SceneManager.LoadScene($"LoadingScreen");
         });
     }
-    
+    // TODO: Add Static Methods to Update Score etc...
 }

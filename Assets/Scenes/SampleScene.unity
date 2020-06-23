@@ -1067,6 +1067,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_InGame
       objectReference: {fileID: 0}
+    - target: {fileID: 6519794215984546343, guid: f6842a899a88dbf429de137bef848ab6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6519794216738062338, guid: f6842a899a88dbf429de137bef848ab6,
         type: 3}
       propertyPath: m_AnchorMax.x
