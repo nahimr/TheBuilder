@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
@@ -45,6 +45,16 @@ namespace UI
             retryButton.onClick.AddListener(StaticBuilder.ReloadLevel);
             finalRetryButton.onClick.AddListener(StaticBuilder.ReloadLevel);
             exitGameButton.onClick.AddListener(()=> StaticBuilder.LoadLevel(1));
+        }
+
+        private void Start()
+        {
+            GameEvents.Current.OnEndGame += EndGame;
+        }
+
+        private void EndGame(int lvl, bool haveWon)
+        {
+            pauseButton.interactable = !gameFinished.activeSelf;
         }
     }
 }

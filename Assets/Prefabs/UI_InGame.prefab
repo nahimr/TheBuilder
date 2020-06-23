@@ -1495,18 +1495,18 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 5819156f74d57ee4d81bc4192312278d, type: 3}
-    m_FontSize: 60
+    m_FontSize: 52
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
-    m_MaxSize: 73
+    m_MaxSize: 60
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: SETTINGS
+  m_Text: Next level
 --- !u!1 &6519794215361059834
 GameObject:
   m_ObjectHideFlags: 0
@@ -2442,7 +2442,7 @@ MonoBehaviour:
   resultText: {fileID: 6519794215543404943}
   ad: {fileID: 7725927122598097655}
   finalRetryButton: {fileID: 6519794215684338229}
-  finalSettingsButton: {fileID: 6519794216618766705}
+  finalNextLevelButton: {fileID: 6519794216618766705}
   finalExitButton: {fileID: 6519794215685375624}
   jetpackBar: {fileID: 6519794215883794261}
   jetpackBarImage: {fileID: 6519794214719330832}
@@ -2842,7 +2842,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6519794215984546342
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3078,7 +3078,7 @@ MonoBehaviour:
     m_Font: {fileID: 12800000, guid: 5819156f74d57ee4d81bc4192312278d, type: 3}
     m_FontSize: 58
     m_FontStyle: 0
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 10
     m_MaxSize: 73
     m_Alignment: 4
@@ -3087,7 +3087,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Exit GAME
+  m_Text: Exit Level
 --- !u!1 &6519794216144175311
 GameObject:
   m_ObjectHideFlags: 0
@@ -3970,7 +3970,7 @@ GameObject:
   - component: {fileID: 6519794216618766710}
   - component: {fileID: 6519794216618766705}
   m_Layer: 5
-  m_Name: Settings
+  m_Name: NextLevel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
