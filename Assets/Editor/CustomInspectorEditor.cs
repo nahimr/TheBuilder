@@ -1,4 +1,5 @@
 ﻿using Items;
+using UI;
 using UnityEditor;
 using UnityEngine;
 
@@ -53,3 +54,25 @@ public class HeartInspector : Editor{
             EditorUtility.SetDirty(myTarget);
     }
 } 
+
+
+
+[CustomEditor(typeof(LevelGenerator), true)]
+public class LevelGeneratorEditor : Editor
+{
+    public override void OnInspectorGUI()
+    {
+        var myTarget = (LevelGenerator) target;
+        GUILayout.Label("Level Generator");
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("levels"));
+        if (GUILayout.Button("Generate JSON"))
+        {
+            System.IO.File.WriteAllText(Application.dataPath + "/resources/Levels.json",  JsonHelper.ArrayToJson<LevelData>(myTarget.levels));
+            AssetDatabase.Refresh();
+        }
+        serializedObject.ApplyModifiedProperties();
+        if(GUI.changed)
+            EditorUtility.SetDirty(myTarget);
+        
+    }
+}
