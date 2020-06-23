@@ -2,7 +2,7 @@
 using UnityEngine.SceneManagement;
 public class StaticBuilder : MonoBehaviour
 {
-    public static void LoadLevel(int lvl)
+    public static void LoadScene(int lvl)
     {
         GlobalData.SceneLoading = lvl;
         SceneManager.LoadScene($"LoadingScreen");
@@ -13,7 +13,7 @@ public class StaticBuilder : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void NoStatic_LoadLevel(int lvl)
+    public void NoStatic_LoadScene(int lvl)
     {
         GlobalData.SceneLoading = lvl;
         SceneManager.LoadScene($"LoadingScreen");
