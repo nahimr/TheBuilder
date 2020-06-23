@@ -15,6 +15,14 @@ public class GameEvents : MonoBehaviour
 
     public event Action OnSpecial;
 
+    public event Action<int,bool> OnEndGame;
+
+
+    public void EndGame(int lvl, bool haveWon)
+    {
+        OnEndGame?.Invoke(lvl, haveWon);
+    }
+    
     public void Special()
     {
         OnSpecial?.Invoke();
