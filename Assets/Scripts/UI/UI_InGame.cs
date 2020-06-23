@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
@@ -28,7 +28,7 @@ namespace UI
         public Text resultText;
         public GameObject ad;
         public Button finalRetryButton;
-        public Button finalSettingsButton;
+        public Button finalNextLevelButton;
         public Button finalExitButton;
 
         [Header("Mount")] 
@@ -44,7 +44,8 @@ namespace UI
             Instance = this;
             retryButton.onClick.AddListener(StaticBuilder.ReloadLevel);
             finalRetryButton.onClick.AddListener(StaticBuilder.ReloadLevel);
-            exitGameButton.onClick.AddListener(()=> StaticBuilder.LoadLevel(1));
+            exitGameButton.onClick.AddListener(()=> StaticBuilder.LoadScene(1));
+            finalExitButton.onClick.AddListener(()=> StaticBuilder.LoadScene(1));
         }
 
         private void Start()
